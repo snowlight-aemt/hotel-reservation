@@ -6,6 +6,7 @@ import me.snow.hotelpms.room.repository.RoomRepository;
 import me.snow.hotelpms.room.repository.RoomType;
 import me.snow.hotelpms.room.repository.RoomTypeRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,8 +26,9 @@ public class RoomServiceTest {
     @Autowired
     RoomService roomService;
 
+    @DisplayName("두 개 이상의 예약을 테스트 (성공)")
     @Test
-    public void reservation2() {
+    public void reservation_2() {
         // given
         RoomType s1 = roomTypeRepository.save(new RoomType("S1", "스탠다드 01"));
 
@@ -54,6 +56,7 @@ public class RoomServiceTest {
         Assertions.assertThat(roomService.findRoomAvailableReservation(checkinDate, checkoutDate)).size().isEqualTo(2);
     }
 
+    @DisplayName("한 개 이상의 예약을 테스트 (성공)")
     @Test
     public void reservation() {
         // given
@@ -82,6 +85,7 @@ public class RoomServiceTest {
         Assertions.assertThat(roomService.findRoomAvailableReservation(now, now.plusDays(1))).size().isEqualTo(1);
     }
 
+    @DisplayName("예약 가능한 객실 조회 (성공)")
     @Test
     public void findRoomAvailableReservation() {
         RoomType s1 = roomTypeRepository.save(new RoomType("S1", "스탠다드 01"));

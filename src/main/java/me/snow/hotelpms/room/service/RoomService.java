@@ -36,14 +36,9 @@ public class RoomService {
                 = roomIndicatorRepository.findByCheckinDateLessThanEqualAndCheckoutDateGreaterThanAndCheckinDateLessThanAndCheckoutDateGreaterThanEqual(checkinDate, checkinDate, checkoutDate, checkoutDate);
         // TODO 개선 가능
         List<Room> impossibleRooms = impossibleRoomIndicators.stream()
-                .map(RoomIndicator::getRoom)
-                .toList();
+                                                            .map(RoomIndicator::getRoom)
+                                                            .toList();
         return impossibleRooms;
-    }
-
-    private boolean isUsedRoom(LocalDate checkinDate, LocalDate checkoutDate, String roomNo) {
-        List<Room> usedRoom = findUsedRoom(checkinDate, checkoutDate);
-        return usedRoom.contains(roomNo);
     }
 
     @Transactional(readOnly = true)
@@ -59,5 +54,10 @@ public class RoomService {
             throw new RuntimeException("객실 선택 실패");
 
         roomIndicatorRepository.save(new RoomIndicator(checkinDate, checkoutDate, room));
+    }
+
+    private boolean isUsedRoom(LocalDate checkinDate, LocalDate checkoutDate, String roomNo) {
+        List<Room> usedRoom = findUsedRoom(checkinDate, checkoutDate);
+        return usedRoom.contains(roomNo);
     }
 }
