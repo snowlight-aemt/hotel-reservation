@@ -8,4 +8,6 @@ spring:
     url: jdbc:h2:tcp://localhost/~/h2/hotel-db
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
+    show-sql: true
+

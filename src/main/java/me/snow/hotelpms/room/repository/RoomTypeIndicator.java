@@ -10,21 +10,21 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RoomIndicator {
+public class RoomTypeIndicator {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomIndicatorId;
     private LocalDate checkinDate;
     private LocalDate checkoutDate;
 
     @ManyToOne
-    private Room room;
+    private RoomType roomType;
 
     private LocalDate createdAt;
     private LocalDate updatedAt;
 
-    public RoomIndicator(LocalDate checkinDate, LocalDate checkoutDate, Room room) {
+    public RoomTypeIndicator(LocalDate checkinDate, LocalDate checkoutDate, RoomType roomType) {
         this.checkinDate = checkinDate;
         this.checkoutDate = checkoutDate;
-        this.room = room;
+        this.roomType = roomType;
     }
 }

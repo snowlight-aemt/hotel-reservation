@@ -7,7 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+@Getter
 @Entity
 @EqualsAndHashCode(of = "roomTypeId")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,9 +19,11 @@ public class RoomType {
     private Long roomTypeId;
     @Column(nullable = false,  unique = true)
     private String roomCode;
-    @Getter
     @Column(nullable = false, length = 100)
     private String roomName;
+
+    @OneToMany(mappedBy = "roomType", fetch = FetchType.EAGER)
+    private List<Room> rooms = new ArrayList<>();
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
