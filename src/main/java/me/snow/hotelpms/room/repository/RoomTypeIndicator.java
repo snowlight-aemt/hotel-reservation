@@ -26,5 +26,8 @@ public class RoomTypeIndicator {
         this.checkinDate = checkinDate;
         this.checkoutDate = checkoutDate;
         this.roomType = roomType;
+
+        this.createdAt = LocalDate.now();
+        this.updatedAt = LocalDate.now();
     }
 }

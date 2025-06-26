@@ -2,6 +2,7 @@ package me.snow.hotelpms.room.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import me.snow.hotelpms.room.errors.LackOfQuantityException;
 import me.snow.hotelpms.room.repository.Room;
 import me.snow.hotelpms.room.repository.RoomRepository;
 import me.snow.hotelpms.room.repository.RoomType;
@@ -30,7 +31,7 @@ public class RoomTypeServiceTest {
     @Autowired
     EntityManager entityManager;
 
-    @DisplayName("두 개 이상의 예약을 테스트 (성공)")
+    @DisplayName("수량을 넘의 예약을 테스트 (실패)")
     @Test
     public void reservation_2() {
         createRoom();
@@ -42,6 +43,20 @@ public class RoomTypeServiceTest {
         Assertions.assertThatThrownBy(() -> {
             roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
         }).isInstanceOf(LackOfQuantityException.class);
+    }
+
+    @DisplayName("예약 가능한 객실 조회 - 수량 상태 (성공)")
+    @Test
+    public void findRoomAvailableReservation_usage() {
+        createRoom();
+
+        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
+        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
+
+        AvailableRoomType str = roomTypeService.findAvailableRoomType(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
+        Assertions.assertThat(str).isNotNull();
+        Assertions.assertThat(str.getTotal()).isEqualTo(3);
+        Assertions.assertThat(str.getUsed()).isEqualTo(2);
     }
 
     @DisplayName("예약 가능한 객실 조회 - 룸 코드 (성공)")

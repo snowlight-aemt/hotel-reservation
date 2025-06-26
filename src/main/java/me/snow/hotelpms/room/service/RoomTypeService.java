@@ -1,6 +1,7 @@
 package me.snow.hotelpms.room.service;
 
 import lombok.AllArgsConstructor;
+import me.snow.hotelpms.room.errors.LackOfQuantityException;
 import me.snow.hotelpms.room.repository.RoomType;
 import me.snow.hotelpms.room.repository.RoomTypeIndicator;
 import me.snow.hotelpms.room.repository.RoomTypeIndicatorRepository;
@@ -10,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -20,18 +23,24 @@ public class RoomTypeService {
     private final RoomTypeIndicatorRepository roomTypeIndicatorRepository;
 
     public List<AvailableRoomType> findAvailableRoomType(LocalDate checkin, LocalDate checkout) {
-        List<RoomTypeIndicator> roomTypeIndicators =  roomTypeIndicatorRepository.findReservationCount(checkin, checkout);
+        List<RoomTypeIndicator> roomTypeIndicators = roomTypeIndicatorRepository.findReservationCount(checkin, checkout);
+        Map<String, Integer> impossibleRoomTypes = new HashMap<>();
+        roomTypeIndicators.forEach(roomTypeIndicator -> {
+            if (!impossibleRoomTypes.containsKey(roomTypeIndicator.getRoomType().getRoomCode())) {
+                impossibleRoomTypes.put(roomTypeIndicator.getRoomType().getRoomCode(), 1);
+            } else {
+                Integer count = impossibleRoomTypes.get(roomTypeIndicator.getRoomType().getRoomCode());
+                impossibleRoomTypes.put(roomTypeIndicator.getRoomType().getRoomCode(), ++count);
+            }
+        });
+        
         List<RoomType> roomTypes = roomTypeRepository.findRoomTypeAll();
-
         List<AvailableRoomType> availableRoomTypes = new ArrayList<>();;
         for (var roomType : roomTypes) {
             AvailableRoomType availableRoomType = AvailableRoomType.fromRoomType(roomType);
 
-            for (var roomTypeIndicator : roomTypeIndicators) {
-                if (availableRoomType.getRoomCode().equals(roomTypeIndicator.getRoomType().getRoomCode())) {
-                    availableRoomType.plusOne();
-                }
-            }
+            Integer count = impossibleRoomTypes.getOrDefault(availableRoomType.getRoomCode(), 0);
+            availableRoomType.setUsedRoomType(count);
 
             availableRoomTypes.add(availableRoomType);
         }

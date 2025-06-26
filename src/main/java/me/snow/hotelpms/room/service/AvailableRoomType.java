@@ -23,10 +23,22 @@ public class AvailableRoomType {
         return roomUsage.total - roomUsage.used > 0;
     }
 
+    public void setUsedRoomType(Integer count) {
+        this.roomUsage.used = count;
+    }
+
+    public int getUsed() {
+        return this.roomUsage.getUsed();
+    }
+
+    public int getTotal() {
+        return this.roomUsage.getTotal();
+    }
+
     @Data
     @AllArgsConstructor
     static class RoomUsage {
-        int total = 0;
-        int used = 0;
+        private int total = 0;
+        private int used = 0;
     }
 }
