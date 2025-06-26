@@ -23,7 +23,7 @@ public class AvailableRoomType {
         return roomUsage.total - roomUsage.used > 0;
     }
 
-    public void setUsedRoomType(Integer count) {
+    public void setUsedRoomTypeCount(Integer count) {
         this.roomUsage.used = count;
     }
 

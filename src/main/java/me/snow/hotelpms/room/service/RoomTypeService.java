@@ -23,8 +23,8 @@ public class RoomTypeService {
     private final RoomTypeIndicatorRepository roomTypeIndicatorRepository;
 
     public List<AvailableRoomType> findAvailableRoomType(LocalDate checkin, LocalDate checkout) {
-        List<RoomTypeIndicator> roomTypeIndicators = roomTypeIndicatorRepository.findReservationCount(checkin, checkout);
         Map<String, Integer> impossibleRoomTypes = new HashMap<>();
+        List<RoomTypeIndicator> roomTypeIndicators = roomTypeIndicatorRepository.findReservationCount(checkin, checkout);
         roomTypeIndicators.forEach(roomTypeIndicator -> {
             if (!impossibleRoomTypes.containsKey(roomTypeIndicator.getRoomType().getRoomCode())) {
                 impossibleRoomTypes.put(roomTypeIndicator.getRoomType().getRoomCode(), 1);
@@ -33,17 +33,17 @@ public class RoomTypeService {
                 impossibleRoomTypes.put(roomTypeIndicator.getRoomType().getRoomCode(), ++count);
             }
         });
-        
+
+        List<AvailableRoomType> availableRoomTypes = new ArrayList<>();
         List<RoomType> roomTypes = roomTypeRepository.findRoomTypeAll();
-        List<AvailableRoomType> availableRoomTypes = new ArrayList<>();;
-        for (var roomType : roomTypes) {
+        roomTypes.forEach(roomType -> {
             AvailableRoomType availableRoomType = AvailableRoomType.fromRoomType(roomType);
 
             Integer count = impossibleRoomTypes.getOrDefault(availableRoomType.getRoomCode(), 0);
-            availableRoomType.setUsedRoomType(count);
+            availableRoomType.setUsedRoomTypeCount(count);
 
             availableRoomTypes.add(availableRoomType);
-        }
+        });
 
         return availableRoomTypes;
     }
