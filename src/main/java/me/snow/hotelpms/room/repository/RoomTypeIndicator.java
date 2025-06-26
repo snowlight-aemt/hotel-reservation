@@ -18,14 +18,16 @@ public class RoomTypeIndicator {
 
     @ManyToOne
     private RoomType roomType;
+    private Integer numberOfGuests;
 
     private LocalDate createdAt;
     private LocalDate updatedAt;
 
-    public RoomTypeIndicator(LocalDate checkinDate, LocalDate checkoutDate, RoomType roomType) {
+    public RoomTypeIndicator(LocalDate checkinDate, LocalDate checkoutDate, RoomType roomType, Integer numberOfGuests) {
         this.checkinDate = checkinDate;
         this.checkoutDate = checkoutDate;
         this.roomType = roomType;
+        this.numberOfGuests = numberOfGuests;
 
         this.createdAt = LocalDate.now();
         this.updatedAt = LocalDate.now();

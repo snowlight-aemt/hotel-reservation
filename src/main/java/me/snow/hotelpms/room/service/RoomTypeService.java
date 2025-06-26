@@ -2,10 +2,7 @@ package me.snow.hotelpms.room.service;
 
 import lombok.AllArgsConstructor;
 import me.snow.hotelpms.room.errors.LackOfQuantityException;
-import me.snow.hotelpms.room.repository.RoomType;
-import me.snow.hotelpms.room.repository.RoomTypeIndicator;
-import me.snow.hotelpms.room.repository.RoomTypeIndicatorRepository;
-import me.snow.hotelpms.room.repository.RoomTypeRepository;
+import me.snow.hotelpms.room.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +18,7 @@ import java.util.Map;
 public class RoomTypeService {
     private final RoomTypeRepository roomTypeRepository;
     private final RoomTypeIndicatorRepository roomTypeIndicatorRepository;
+    private final VoucherRepository voucherRepository;
 
     public List<AvailableRoomType> findAvailableRoomType(LocalDate checkin, LocalDate checkout) {
         Map<String, Integer> impossibleRoomTypes = new HashMap<>();
@@ -29,8 +27,9 @@ public class RoomTypeService {
             if (!impossibleRoomTypes.containsKey(roomTypeIndicator.getRoomType().getRoomCode())) {
                 impossibleRoomTypes.put(roomTypeIndicator.getRoomType().getRoomCode(), 1);
             } else {
-                Integer count = impossibleRoomTypes.get(roomTypeIndicator.getRoomType().getRoomCode());
-                impossibleRoomTypes.put(roomTypeIndicator.getRoomType().getRoomCode(), ++count);
+                Integer prev = impossibleRoomTypes.get(roomTypeIndicator.getRoomType().getRoomCode());
+                Integer curr = roomTypeIndicator.getNumberOfGuests();
+                impossibleRoomTypes.put(roomTypeIndicator.getRoomType().getRoomCode(), prev + curr);
             }
         });
 
@@ -55,7 +54,7 @@ public class RoomTypeService {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    public void reservation(LocalDate checkin, LocalDate checkout, String roomCode) {
+    public Voucher reservation(LocalDate checkin, LocalDate checkout, String roomCode, Integer numberOfGuests) {
         // TODO 유효성 체크
 
         AvailableRoomType availableRoomType = findAvailableRoomType(LocalDate.now(), LocalDate.now().plusDays(1), roomCode);
@@ -64,6 +63,8 @@ public class RoomTypeService {
         }
 
         RoomType roomType = roomTypeRepository.findByRoomCode(roomCode).orElseThrow(IllegalArgumentException::new);
-        roomTypeIndicatorRepository.save(new RoomTypeIndicator(checkin, checkout, roomType));
+        RoomTypeIndicator roomTypeIndicator = roomTypeIndicatorRepository.save(new RoomTypeIndicator(checkin, checkout, roomType, numberOfGuests));
+
+        return voucherRepository.save(new Voucher(roomTypeIndicator));
     }
 }

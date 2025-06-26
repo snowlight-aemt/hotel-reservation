@@ -3,10 +3,7 @@ package me.snow.hotelpms.room.service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import me.snow.hotelpms.room.errors.LackOfQuantityException;
-import me.snow.hotelpms.room.repository.Room;
-import me.snow.hotelpms.room.repository.RoomRepository;
-import me.snow.hotelpms.room.repository.RoomType;
-import me.snow.hotelpms.room.repository.RoomTypeRepository;
+import me.snow.hotelpms.room.repository.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,16 +30,46 @@ public class RoomTypeServiceTest {
 
     @DisplayName("수량을 넘의 예약을 테스트 (실패)")
     @Test
+    public void reservation_3() {
+        createRoom();
+
+        Voucher voucher = roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR", 2);
+        System.out.println(voucher.getIdentity());
+
+        Voucher voucher2 = roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR", 2);
+        System.out.println(voucher2.getIdentity());
+
+        Assertions.assertThat(voucher).isNotNull();
+        Assertions.assertThat(voucher.getIdentity()).isNotNull();
+        Assertions.assertThat(voucher.getIdentity()).hasSize(16);
+    }
+
+    @DisplayName("수량을 넘의 예약을 테스트 (실패)")
+    @Test
     public void reservation_2() {
         createRoom();
 
-        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
-        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
-        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
+        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR", 1);
+        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR", 1);
+        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR", 1);
 
         Assertions.assertThatThrownBy(() -> {
-            roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
+            roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR", 1);
         }).isInstanceOf(LackOfQuantityException.class);
+    }
+
+    @DisplayName("예약 가능한 객실 조회 - 인원 수 (성공)")
+    @Test
+    public void findRoomAvailableReservation_usage_numberOfGuests() {
+        createRoom();
+
+        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR", 1);
+        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR", 2);
+
+        AvailableRoomType str = roomTypeService.findAvailableRoomType(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
+        Assertions.assertThat(str).isNotNull();
+        Assertions.assertThat(str.getTotal()).isEqualTo(3);
+        Assertions.assertThat(str.getUsed()).isEqualTo(3);
     }
 
     @DisplayName("예약 가능한 객실 조회 - 수량 상태 (성공)")
@@ -50,8 +77,8 @@ public class RoomTypeServiceTest {
     public void findRoomAvailableReservation_usage() {
         createRoom();
 
-        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
-        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
+        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR", 1);
+        roomTypeService.reservation(LocalDate.now(), LocalDate.now().plusDays(1), "STR", 1);
 
         AvailableRoomType str = roomTypeService.findAvailableRoomType(LocalDate.now(), LocalDate.now().plusDays(1), "STR");
         Assertions.assertThat(str).isNotNull();
@@ -70,7 +97,6 @@ public class RoomTypeServiceTest {
         Assertions.assertThat(roomType.getRoomCode()).contains("STR");
 //        Assertions.assertThat(roomType.getQuantity()).isEqualTo(3);
     }
-
 
     @DisplayName("예약 가능한 객실 조회 (성공)")
     @Test
