@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -20,8 +21,8 @@ public class RoomTypeIndicator {
     private RoomType roomType;
     private Integer numberOfGuests;
 
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public RoomTypeIndicator(LocalDate checkinDate, LocalDate checkoutDate, RoomType roomType, Integer numberOfGuests) {
         this.checkinDate = checkinDate;
@@ -29,7 +30,7 @@ public class RoomTypeIndicator {
         this.roomType = roomType;
         this.numberOfGuests = numberOfGuests;
 
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = createdAt;
     }
 }
