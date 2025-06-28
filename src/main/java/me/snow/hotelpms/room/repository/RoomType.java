@@ -11,15 +11,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 @Entity
 @EqualsAndHashCode(of = "roomTypeId")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RoomType {
+    @Getter
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomTypeId;
+    @Getter
     @Column(nullable = false,  unique = true)
     private String roomCode;
+    @Getter
     @Column(nullable = false, length = 100)
     private String roomName;
 
@@ -35,5 +37,9 @@ public class RoomType {
 
         this.createdAt = LocalDateTime.now();
         this.updatedAt = createdAt;
+    }
+
+    public int numberOfRooms() {
+        return rooms.size();
     }
 }

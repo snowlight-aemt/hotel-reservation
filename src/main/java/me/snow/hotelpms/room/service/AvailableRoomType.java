@@ -12,7 +12,7 @@ public class AvailableRoomType {
     private RoomUsage roomUsage;
 
     public static AvailableRoomType fromRoomType(RoomType roomType) {
-        return new AvailableRoomType(roomType.getRoomCode(), roomType.getRoomName(), new RoomUsage(roomType.getRooms().size(), 0));
+        return new AvailableRoomType(roomType.getRoomCode(), roomType.getRoomName(), new RoomUsage(roomType.numberOfRooms(), 0));
     }
 
     public void plusOne() {
@@ -23,7 +23,7 @@ public class AvailableRoomType {
         return roomUsage.total - roomUsage.used > 0;
     }
 
-    public void setUsedRoomTypeCount(Integer count) {
+    public void setUsedRoomCount(Integer count) {
         this.roomUsage.used = count;
     }
 

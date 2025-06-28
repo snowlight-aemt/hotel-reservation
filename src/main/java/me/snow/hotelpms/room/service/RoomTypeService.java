@@ -24,12 +24,12 @@ public class RoomTypeService {
         Map<String, Integer> impossibleRoomTypes = new HashMap<>();
         List<RoomTypeIndicator> roomTypeIndicators = roomTypeIndicatorRepository.findReservationCount(checkin, checkout);
         roomTypeIndicators.forEach(roomTypeIndicator -> {
-            if (!impossibleRoomTypes.containsKey(roomTypeIndicator.getRoomType().getRoomCode())) {
-                impossibleRoomTypes.put(roomTypeIndicator.getRoomType().getRoomCode(), 1);
+            if (!impossibleRoomTypes.containsKey(roomTypeIndicator.getRoomTypeCode())) {
+                impossibleRoomTypes.put(roomTypeIndicator.getRoomTypeCode(), 1);
             } else {
-                Integer prev = impossibleRoomTypes.get(roomTypeIndicator.getRoomType().getRoomCode());
+                Integer prev = impossibleRoomTypes.get(roomTypeIndicator.getRoomTypeCode());
                 Integer curr = roomTypeIndicator.getNumberOfGuests();
-                impossibleRoomTypes.put(roomTypeIndicator.getRoomType().getRoomCode(), prev + curr);
+                impossibleRoomTypes.put(roomTypeIndicator.getRoomTypeCode(), prev + curr);
             }
         });
 
@@ -39,8 +39,7 @@ public class RoomTypeService {
             AvailableRoomType availableRoomType = AvailableRoomType.fromRoomType(roomType);
 
             Integer count = impossibleRoomTypes.getOrDefault(availableRoomType.getRoomCode(), 0);
-            availableRoomType.setUsedRoomTypeCount(count);
-
+            availableRoomType.setUsedRoomCount(count);
             availableRoomTypes.add(availableRoomType);
         });
 

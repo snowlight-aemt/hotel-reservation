@@ -33,4 +33,8 @@ public class RoomTypeIndicator {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = createdAt;
     }
+
+    public String getRoomTypeCode() {
+        return this.roomType.getRoomCode();
+    }
 }
